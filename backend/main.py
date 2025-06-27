@@ -23,7 +23,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://your-frontend-domain.vercel.app",  # Add your frontend URL
+        "https://askaipdf.netlify.app",  # Add your Netlify URL
+        os.getenv("FRONTEND_URL", ""),  # Add this for your deployed frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
