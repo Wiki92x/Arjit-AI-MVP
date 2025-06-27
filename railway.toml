@@ -1,10 +1,8 @@
 [build]
 builder = "nixpacks"
-
-[build.nixpacks]
-languages = ["python"]
+[build.variables]
+NIXPACKS_PYTHON_VERSION = "3.11"
 
 [deploy]
-startCommand = "python main.py"
+startCommand = "python3 src/main.py"
 healthcheckPath = "/"
-healthcheckTimeout = 100
