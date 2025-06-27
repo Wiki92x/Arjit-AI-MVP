@@ -19,17 +19,25 @@ load_dotenv()
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 
 app = FastAPI()
+
+allow_origins = [
+    "http://localhost:3000",
+    "https://askaipdf.netlify.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://askaipdf.netlify.app",  # This looks correct
-        os.getenv("FRONTEND_URL", ""),  # This might be empty
-    ],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def root():
+    return {
+        "message": "AskAI API Server. Please access the application through our frontend at https://askaipdf.netlify.app"
+    }
 
 # Store text chunks directly without embeddings
 session_store = {}
