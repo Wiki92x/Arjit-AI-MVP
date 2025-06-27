@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { config } from '../../config';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -40,7 +41,7 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/history/${sessionId}`);
+        const res = await fetch(`${config.apiUrl}/history/${sessionId}`);
         if (res.ok) {
           const data = await res.json();
           setMessages(data.messages || []);
@@ -71,7 +72,7 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/chat-with-pdf', {
+      const res = await fetch(`${config.apiUrl}/chat-with-pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,7 +117,7 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
 
     try {
       const eventSource = new EventSource(
-        `http://localhost:8000/chat-with-pdf/stream?` + 
+        `${config.apiUrl}/chat-with-pdf/stream?` + 
         `session_id=${encodeURIComponent(sessionId)}&` +
         `question=${encodeURIComponent(currentInput)}&` +
         `model=${encodeURIComponent(selectedModel)}&` +

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { config } from '../../config';
 
 interface Session {
   session_id: string;
@@ -31,7 +32,7 @@ export default function SessionList({
           throw new Error('Not authenticated');
         }
         
-        const res = await fetch('http://localhost:8000/sessions', {
+        const res = await fetch(`${config.apiUrl}/sessions`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

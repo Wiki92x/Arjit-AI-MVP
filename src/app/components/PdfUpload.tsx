@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { config } from '../../config';
 
 interface Props {
   onSessionIdAction: (id: string, filename: string) => void;
@@ -19,7 +20,7 @@ export default function PdfUpload({ onSessionIdAction }: Props) {
     formData.append('file', file);
 
     try {
-      const res = await fetch('http://localhost:8000/upload', {
+      const res = await fetch(`${config.apiUrl}/upload`, {
         method: 'POST',
         body: formData,
       });
