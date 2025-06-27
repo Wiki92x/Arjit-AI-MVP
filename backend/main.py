@@ -23,8 +23,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://askaipdf.netlify.app",  # Add your Netlify URL
-        os.getenv("FRONTEND_URL", ""),  # Add this for your deployed frontend
+        "https://askaipdf.netlify.app",  # This looks correct
+        os.getenv("FRONTEND_URL", ""),  # This might be empty
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -133,7 +133,7 @@ async def chat_with_pdf(req: ChatRequest):
             headers={
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
                 "Content-Type": "application/json",
-                "HTTP-Referer": "http://localhost:3000",
+                "HTTP-Referer": os.getenv("FRONTEND_URL", "http://localhost:3000"),  # Use environment variable
                 "X-Title": "AskAI Chat"
             },
             json={
@@ -196,7 +196,7 @@ async def chat_with_pdf_stream(
                 headers={
                     "Authorization": f"Bearer {OPENROUTER_KEY}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "http://localhost:3000",
+                    "HTTP-Referer": os.getenv("FRONTEND_URL", "http://localhost:3000"),  # Use environment variable
                     "X-Title": "AskAI Chat"
                 },
                 json={
