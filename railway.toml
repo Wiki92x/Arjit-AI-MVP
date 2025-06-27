@@ -1,8 +1,6 @@
 [build]
-builder = "nixpacks"
-[build.variables]
-NIXPACKS_PYTHON_VERSION = "3.11"
+builder = "docker"
 
 [deploy]
-startCommand = "python3 src/main.py"
 healthcheckPath = "/"
+healthcheckTimeout = 100
