@@ -34,10 +34,8 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def root():
-    return {
-        "message": "AskAI API Server. Please access the application through our frontend at https://askaipdf.netlify.app"
-    }
+def root():
+    return {"status": "ok"}
 
 # Store text chunks directly without embeddings
 session_store = {}
