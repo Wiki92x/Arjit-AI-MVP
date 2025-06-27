@@ -34,7 +34,7 @@ app.add_middleware(
 )
 
 @app.get("/")
-def root():
+def health():
     return {"status": "ok"}
 
 # Store text chunks directly without embeddings
