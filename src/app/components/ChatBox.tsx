@@ -29,6 +29,7 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
   const [contextChunks, setContextChunks] = useState<string[]>([]);
   const [showContextPreview, setShowContextPreview] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   // Auto-scroll chat on new messages
   useEffect(() => {
@@ -36,6 +37,15 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages, streamingMessage]);
+
+  // Cleanup event source on unmount
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
 
   // Load chat history on initial load
   useEffect(() => {
@@ -115,6 +125,11 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
     const currentInput = input;
     setInput('');
 
+    // Close any existing event source
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+
     try {
       const eventSource = new EventSource(
         `${config.apiUrl}/chat-with-pdf/stream?` + 
@@ -124,6 +139,8 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
         `temperature=${encodeURIComponent(temperature.toString())}`
       );
       
+      eventSourceRef.current = eventSource;
+
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         
@@ -139,12 +156,14 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
         } else if (data.type === 'end') {
           // Streaming completed
           eventSource.close();
+          eventSourceRef.current = null;
           setLoading(false);
           
-          // Add the complete message to the history
+          // Add the complete message to the history - use the full message from the server if available
+          const completeMessage = data.fullMessage || streamingMessage;
           const assistantMsg: Message = {
             role: 'assistant',
-            content: streamingMessage,
+            content: completeMessage,
           };
           setMessages(prev => [...prev, assistantMsg]);
           setStreamingMessage('');
@@ -154,6 +173,7 @@ export default function ChatBox({ sessionId, pdfName }: { sessionId: string; pdf
       eventSource.onerror = (error) => {
         console.error('SSE Error:', error);
         eventSource.close();
+        eventSourceRef.current = null;
         setLoading(false);
         setError('Stream connection error. Please try again.');
       };

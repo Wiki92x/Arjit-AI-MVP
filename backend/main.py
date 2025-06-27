@@ -34,8 +34,10 @@ app.add_middleware(
 )
 
 @app.get("/")
-def health():
-    return {"status": "ok"}
+async def root():
+    return {
+        "message": "AskAI API Server. Please access the application through our frontend at https://askaipdf.netlify.app"
+    }
 
 # Store text chunks directly without embeddings
 session_store = {}
@@ -235,8 +237,8 @@ async def chat_with_pdf_stream(
                 assistant_message = Message(role="assistant", content=accumulated_response, timestamp=time.time())
                 session["messages"].append(assistant_message.dict())
                 
-                # Signal completion
-                yield f"data: {json.dumps({'type': 'end'})}\n\n"
+                # Signal completion with full accumulated response
+                yield f"data: {json.dumps({'type': 'end', 'fullMessage': accumulated_response})}\n\n"
     
     return StreamingResponse(
         generate(),

@@ -9,10 +9,12 @@ RUN apt-get update && apt-get install -y \
 # Set working dir
 WORKDIR /app
 
-# Copy files
-COPY backend/requirements.txt .
+# Copy requirements first (better caching)
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY backend .
 
-# Run
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Copy all application files
+COPY . .
+
+# Use shell form to properly expand environment variables
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
